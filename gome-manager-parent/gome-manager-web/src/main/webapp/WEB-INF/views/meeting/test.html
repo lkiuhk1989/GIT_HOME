@@ -1,0 +1,75 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+	<title></title>
+	<style type="text/css">
+		ul,li{
+			margin: 0;
+			padding: 0;
+			border:0;
+			list-style: none; 
+		}
+		ul{
+			width: 800px;
+			margin: 20px auto;
+			border:1px solid #d8d8d8;
+			border-radius: 10px;
+			min-height: 500px;
+			padding: 20px;
+			overflow: hidden;
+		}
+		ul li{
+			width: 100%;
+			min-height: 30px;
+			line-height: 30px;
+			color: #333;
+			font-size: 16px;
+			padding: 10px;
+			border-bottom: 1px solid #d8d8d8;
+			animation: myMove 3s;
+			-webkit-animation: myMove 3s; /* Safari and Chrome */
+		}
+		@keyframes myMove
+		{
+			from {
+				margin-left: 800px;
+				opacity: 0;
+			}
+			to {
+				margin-left: 0;
+				opacity: 1
+			}
+		}
+
+		@-webkit-keyframes myMove /* Safari and Chrome */
+		{
+			from {
+				margin-left: 800px;
+				opacity: 0;
+			}
+			to {
+				margin-left: 0;
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+<body>
+	<ul>
+		<li>这是弹幕效果的内容</li>
+		<li>这是弹幕效果的内容</li>
+	</ul>
+	<button>添加</button>
+	<script type="text/javascript">
+		var oUl = document.getElementsByTagName('ul')[0];
+		var oLi = document.createElement('li');
+		var oBtn = document.getElementsByTagName('button')[0];
+		oBtn.onclick = function(){
+			oLi.innerHTML = '测试';
+			oUl.insertBefore(oLi,oUl.childNodes[0]);
+
+		}
+
+	</script>
+</body>
+</html>

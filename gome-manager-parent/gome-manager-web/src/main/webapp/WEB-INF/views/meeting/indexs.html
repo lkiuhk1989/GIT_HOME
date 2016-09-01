@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <title>JSCtarts3</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="../js/meeting/jscharts.js"></script>
+    </head>
+    <body>
+<div>
+	分辨率/宽：<input id="wide" type="text" value="1800">
+	分辨率/高：<input id="height" type="text" value="1000">
+	<input id="A" type="text" value="25">
+	<input id="B" type="text" value="20">
+	<input id="C" type="text" value="15">
+	<input id="D" type="text" value="35">
+	<input id="E" type="text" value="5">
+	<input type="button" value="查看" onclick="show()">
+	<input type="hidden" id="meetId" name="meetId" value="$!meetingVote.code" />
+	<input type="hidden" id="id" name="id" value="$!meetingVote.id" />
+</div>
+<div id="graph" style="width: 100%;height: 100%">Loading graph...</div>
+
+<script type="text/javascript">
+	setInterval("show();",1000);
+	function show(){
+		var meetId = $(this).attr("meetId");
+		var id = $(this).attr("id");
+		alert(meetId +"       "+id);
+		$.ajax({
+			url:'../meetingSchedule/delSchedule',
+			type:'POST',
+			dataType:'json',
+			data:{
+				id:id
+			},
+			success:function(data){
+				if(data.code==1){
+					$("#tishi").text("删除成功");
+					$("#mod-dialog").show();
+			  		$("#mod-dialog-bg").show();
+			  		$("#altbtn").unbind("click");
+			  		$("#altbtn").bind("click",function(){
+						 $("#mod-dialog").hide();
+						 $("#mod-dialog-bg").hide();
+						 window.location.href="../meetingSchedule/toScheduleView?id="+meetId;
+					});
+				}else{
+					$("#tishi").text("删除失败");
+					$("#mod-dialog").show();
+			  		$("#mod-dialog-bg").show();
+			  		$("#altbtn").unbind("click");
+			  		$("#altbtn").bind("click",function(){
+						 $("#mod-dialog").hide();
+						 $("#mod-dialog-bg").hide();
+					});
+				}
+			},
+			error:function(){
+				$("#tishi").text("系统异常");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+				});
+			}
+			
+		});
+	}
+
+	function showResult(wide,height,A,B,C,D,E){
+		var wideVal = document.getElementById("wide").value;
+		wideVal = Number(wideVal);
+		var heightVal = document.getElementById("height").value;
+		heightVal = Number(heightVal);
+		var aVal = document.getElementById("A").value;
+		aVal = parseInt(aVal);
+		var bVal = document.getElementById("B").value;
+		bVal = parseInt(bVal);
+		var cVal = document.getElementById("C").value;
+		cVal = parseInt(cVal);
+		var dVal = document.getElementById("D").value;
+		dVal = parseInt(dVal);
+		var eVal = document.getElementById("E").value;
+		eVal = parseInt(eVal);
+		
+		var myData = new Array(['A', aVal], ['B', bVal], ['C', cVal], ['D', dVal],['其他',eVal]);
+		var colors = ['#AF0202', '#EC7A00', '#FCD200', '#81C714', '#808080'];
+		var myChart = new JSChart('graph', 'bar',"4949a117e0bff9be30");
+		myChart.setDataArray(myData);
+		myChart.colorizeBars(colors);
+		myChart.setTitle('第一题');
+		myChart.setTitleColor('#8E8E8E');
+		myChart.setAxisNameX('选择项');//X轴名称
+		myChart.setAxisNameY('选择数量/票');//Y轴名称
+		myChart.setAxisColor('#FF11FF');//轴线颜色
+		myChart.setAxisNameFontSize(40);//轴字体大小
+		myChart.setAxisNameColor('#AF0202');//轴名字字体颜色
+		myChart.setAxisValuesColor('#1111FF');//值颜色
+		myChart.setBarValuesColor('#AF0202');//选择值颜色
+		myChart.setAxisPaddingTop(60);//轴距顶
+		myChart.setAxisPaddingRight(140);//轴距右
+		myChart.setAxisPaddingLeft(150);//轴距左
+		myChart.setAxisPaddingBottom(80);//轴距低
+		myChart.setTextPaddingBottom(10);
+		myChart.setTextPaddingLeft(90);
+		myChart.setTitleFontSize(50);//title字体大小
+		myChart.setBarBorderWidth(2);//柱边框宽度
+		myChart.setBarBorderColor('#EC7A00');//柱边框颜色
+		myChart.setBarSpacingRatio(50);//柱宽度
+		myChart.setGrid(false);
+		myChart.setSize(wideVal, heightVal);
+		myChart.draw();
+	}
+</script>
+    </body>
+</html>

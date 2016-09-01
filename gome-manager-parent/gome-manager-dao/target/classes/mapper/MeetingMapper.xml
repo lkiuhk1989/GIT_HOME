@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.Meeting" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_per" property="createPer" jdbcType="VARCHAR" />
+    <result column="begin_time" property="beginTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="pic_url" property="picPath" jdbcType="VARCHAR" />
+    <result column="welcome_letter" property="letterContent" jdbcType="VARCHAR" />
+    <result column="letterPic" property="letterPic" jdbcType="VARCHAR" />
+    <result column="meetAddr" property="meetAddr" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, code,theme, name, status, create_time,
+    create_per, begin_time, end_time,welcome_letter,pic_url,letterPic,meetAddr
+  </sql>
+  
+  <insert id="insertMeeting" parameterType="com.gome.manager.domain.Meeting" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meeting_info (code, name,theme, status, create_time,create_per, begin_time, end_time,welcome_letter,pic_url,meetAddr)
+    values (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{theme,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{createPer,jdbcType=VARCHAR}, #{beginTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR},#{letterContent,jdbcType=VARCHAR},#{picPath,jdbcType=VARCHAR},#{meetAddr,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="selectMeetingListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,code, name,theme, status, create_time,create_per, begin_time, end_time,welcome_letter,pic_url,meetAddr
+  	from wx_meeting_info
+ 	where 1=1
+    <if test="conditions.code != null" >
+      and code = #{conditions.code,jdbcType=VARCHAR} 
+    </if>
+    <if test="conditions.name != null" >
+      and (name like CONCAT('%',#{conditions.name,jdbcType=VARCHAR},'%'))
+    </if>
+    order by create_time desc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.Meeting">
+  	select count(*) from wx_meeting_info 
+ 	where 1=1 
+ 	<if test="code != null" >
+      and code = #{code,jdbcType=VARCHAR} 
+    </if>
+    <if test="name != null" >
+      and (name like CONCAT('%',#{name,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  <select id="selectMeetingById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from wx_meeting_info 
+ 	where id = #{id}
+  </select>
+  <select id="validateMeetCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from wx_meeting_info 
+ 	where code = #{code}
+ 	and status != '2'
+  </select>
+  <select id="selectMeetingListByMeeting" resultMap="BaseResultMap" parameterType="com.gome.manager.domain.Meeting">
+  	select 
+  	<include refid="Base_Column_List"></include>  
+    from wx_meeting_info
+  	where 1=1 
+ 	<if test="id != null" >
+      and id != #{id,jdbcType=BIGINT} 
+    </if>
+   <if test="code != null" >
+      and code = #{code,jdbcType=VARCHAR} 
+    </if>
+    <if test="name != null" >
+      and (name like CONCAT('%',#{name,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  <update id="updateMeeting" parameterType="com.gome.manager.domain.Meeting" >
+    update wx_meeting_info set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="code != null" >
+      , code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null" >
+      , name = #{name,jdbcType=VARCHAR}
+    </if>
+	<if test="status != null" >
+      , status = #{status,jdbcType=VARCHAR} 
+    </if>
+    <if test="theme != null" >
+      , theme = #{theme,jdbcType=VARCHAR} 
+    </if>
+    <if test="beginTime != null" >
+      , begin_time = #{beginTime,jdbcType=VARCHAR}
+    </if>
+    <if test="endTime != null" >
+      , end_time = #{endTime,jdbcType=VARCHAR}
+    </if>
+    <if test="letterContent != null" >
+      , welcome_letter = #{letterContent,jdbcType=VARCHAR}
+    </if>
+    <if test="picPath != null" >
+      , pic_url = #{picPath,jdbcType=VARCHAR}
+    </if>
+    <if test="letterPic != null" >
+      , letterPic = #{letterPic,jdbcType=VARCHAR}
+    </if>
+    <if test="meetAddr != null" >
+      , meetAddr = #{meetAddr,jdbcType=VARCHAR}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateMeetingNew" parameterType="com.gome.manager.domain.Meeting" >
+    update wx_meeting_info set
+    picPath = #{picPath,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <delete id="deleteMeetingById" parameterType="java.lang.Long" >
+    delete from wx_meeting_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <select id="queryMeetCode" resultType="java.lang.String" >
+  	select code from wx_meet_code 
+  </select>
+  <select id="findMeetingBackById" resultType="com.gome.manager.domain.MeetingBack" parameterType="com.gome.manager.domain.MeetingBack">
+  	select picPath from wx_meeting_info 
+  	  where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <update id="updateMeetCode" parameterType="java.lang.String" >
+    update wx_meet_code set code = #{code,jdbcType=VARCHAR}
+  </update>
+  
+   <update id="updateMeetingAll" parameterType="com.gome.manager.domain.Meeting" >
+    update wx_meeting_info set status = '2'
+  </update>
+</mapper> 

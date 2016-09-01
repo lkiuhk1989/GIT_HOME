@@ -1,0 +1,36 @@
+<script src="../plugins/jQuery/jquery-1.11.0.min.js"type="text/javascript"></script>
+<script src="../js/reading/readingTable.js" type="text/javascript"></script>
+<table class="table_data" cellpadding="0" cellspacing="0">
+	<thead>
+	<tr>
+			<th>序号</th>
+			<th>文献主题</th>
+			<th>所属年份</th>
+			<th>期数</th>
+			<th>创建时间</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+		#if($!page.data.size() > 0)
+	    #set($i=($page.pageNo - 1) * $page.pageSize)
+	    #foreach($reading in $page.data)
+	    <tr>
+	    	#set($i=$!i + 1)
+	        <td>$!i</td>
+	        <td>$!reading.title</td>
+	        <td>$!reading.yearValue</td>
+	        <td>第$!reading.catname期</td>
+	        <td>$!reading.createTime</td>
+	        <td><a href="../reading/toEditReadingView?id=$!reading.id" id="editGoods"><i class="fa fa-edit"></i></a><a href="javascript:void(0);" name="deleteReading" readingId="$!reading.id"><i class="fa fa-times"></i></a></td>
+	    </tr>
+	    #end
+	    #else
+		<tr><td colspan='6' align='center'>没有查到任何记录</td></tr>
+		#end
+	</tbody>
+	<tfoot></tfoot>
+</table>
+#if($!page.data.size() > 0)
+#parse("common/pageToolbar.vm")
+#end

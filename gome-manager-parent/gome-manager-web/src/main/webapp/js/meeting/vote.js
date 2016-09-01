@@ -1,0 +1,139 @@
+function openVote(topicNum){
+	var meetId = $("#meetId").val();
+
+	$.ajax({
+		url:'../meetingVote/openVote',
+		type:'POST',
+		dataType:'json',
+		data:{
+			id:topicNum,
+			meetId:meetId
+		},
+		success:function(data){
+			if(data.code==1){
+				$("#tishi").text("开启成功");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+					 window.location.href="../meetingVote/toVoteView?id="+meetId;
+				});
+			}else{
+				$("#tishi").text("开启失败");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+				});
+			}
+		},
+		error:function(){
+			$("#tishi").text("系统异常");
+			$("#mod-dialog").show();
+	  		$("#mod-dialog-bg").show();
+	  		$("#altbtn").unbind("click");
+	  		$("#altbtn").bind("click",function(){
+				 $("#mod-dialog").hide();
+				 $("#mod-dialog-bg").hide();
+			});
+		}
+		
+	});
+
+}
+
+function closeVote(topicNum){
+	var meetId = $("#meetId").val();
+
+	$.ajax({
+		url:'../meetingVote/closeVote',
+		type:'POST',
+		dataType:'json',
+		data:{
+			id:topicNum,
+			meetId:meetId
+		},
+		success:function(data){
+			if(data.code==1){
+				$("#tishi").text("关闭成功");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+					 window.location.href="../meetingVote/toVoteView?id="+meetId;
+				});
+			}else{
+				$("#tishi").text("关闭失败");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+				});
+			}
+		},
+		error:function(){
+			$("#tishi").text("系统异常");
+			$("#mod-dialog").show();
+	  		$("#mod-dialog-bg").show();
+	  		$("#altbtn").unbind("click");
+	  		$("#altbtn").bind("click",function(){
+				 $("#mod-dialog").hide();
+				 $("#mod-dialog-bg").hide();
+			});
+		}
+		
+	});
+}
+function clearVote(topicNum){
+	var meetId = $("#meetId").val();
+	$.ajax({
+		url:'../meetingVote/clearVote',
+		type:'POST',
+		dataType:'json',
+		data:{
+			id:topicNum,
+			meetId:meetId
+		},
+		success:function(data){
+			if(data.code==1){
+				$("#tishi").text("操作成功");
+				$("#mod-dialog").show();
+				$("#mod-dialog-bg").show();
+				$("#altbtn").unbind("click");
+				$("#altbtn").bind("click",function(){
+					$("#mod-dialog").hide();
+					$("#mod-dialog-bg").hide();
+					window.location.href="../meetingVote/toVoteView?id="+meetId;
+				});
+			}else{
+				$("#tishi").text("当前没有投票数据，不需要清空！");
+				$("#mod-dialog").show();
+				$("#mod-dialog-bg").show();
+				$("#altbtn").unbind("click");
+				$("#altbtn").bind("click",function(){
+					$("#mod-dialog").hide();
+					$("#mod-dialog-bg").hide();
+				});
+			}
+		},
+		error:function(){
+			$("#tishi").text("系统异常");
+			$("#mod-dialog").show();
+			$("#mod-dialog-bg").show();
+			$("#altbtn").unbind("click");
+			$("#altbtn").bind("click",function(){
+				$("#mod-dialog").hide();
+				$("#mod-dialog-bg").hide();
+			});
+		}
+		
+	});
+}

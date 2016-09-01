@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.ReadingMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.Reading" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="catname" property="catname" jdbcType="VARCHAR" />
+    <result column="yearValue" property="yearValue" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectReadingListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,catname, yearValue,title, createTime, fileUrl,author,typeName
+  	from wx_reading
+ 	where atype =  #{conditions.atype,jdbcType=VARCHAR}
+ 	<if test="conditions.title != null and conditions.title != ''" >
+ 	 and (title like CONCAT('%',#{conditions.title,jdbcType=VARCHAR},'%'))
+    </if>
+    order by yearValue desc,catname asc,typeName
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.Reading">
+  	select count(*) from wx_reading where atype =  #{atype,jdbcType=VARCHAR}
+  	<if test="title != null and title != ''" >
+      and (title like CONCAT('%',#{title,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  
+   <!--年份列表  -->
+   <select id="selectReadingById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	SELECT  id,catname, yearValue,title, createTime, fileUrl,author,typeName  FROM wx_reading  where id = #{id,jdbcType=BIGINT} 
+  </select>
+   <!--年份列表  -->
+   <select id="queryYearReadingList" resultMap="BaseResultMap">
+	SELECT  id,catname,yearValue FROM wx_reading where atype = '1' GROUP BY yearValue ORDER BY yearValue desc
+  </select>
+   <!--某一年份 导读列表  -->
+  <select id="queryReadingList" resultMap="BaseResultMap" parameterType="com.gome.manager.domain.Reading">
+  	SELECT  id,catname,yearValue,title,createTime,fileUrl,author FROM wx_reading
+      where yearValue = #{yearValue,jdbcType=VARCHAR} 
+      and catname = #{catname,jdbcType=VARCHAR} 
+  	ORDER BY id ASC
+  </select>
+   <!--某一年份 导读列表  -->
+  <select id="queryCatNameList" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT catname FROM (SELECT catname FROM wx_reading WHERE yearValue = #{yearValue,jdbcType=VARCHAR}  ORDER BY catname ASC) AS newTable GROUP BY catname 
+  </select>
+   <insert id="insertReading" parameterType="com.gome.manager.domain.Reading" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_reading (catname, yearValue,title, createTime, fileUrl,author,atype,typeName)
+    values (#{catname,jdbcType=VARCHAR}, #{yearValue,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{atype,jdbcType=VARCHAR}, #{typeName,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateReading" parameterType="com.gome.manager.domain.Reading" >
+    update wx_reading set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="catname != null" >
+      , catname = #{catname,jdbcType=VARCHAR}
+    </if>
+    <if test="yearValue != null" >
+      , yearValue = #{yearValue,jdbcType=VARCHAR}
+    </if>
+    <if test="title != null" >
+      , title = #{title,jdbcType=VARCHAR}
+    </if>
+	<if test="createTime != null" >
+      , createTime = #{createTime,jdbcType=VARCHAR} 
+    </if>
+    <if test="fileUrl != null" >
+      , fileUrl = #{fileUrl,jdbcType=VARCHAR} 
+    </if>
+    <if test="author != null" >
+      , author = #{author,jdbcType=VARCHAR} 
+    </if>
+    <if test="typeName != null" >
+      , typeName = #{typeName,jdbcType=VARCHAR} 
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  <delete id="deleteReadingById" parameterType="java.lang.Long" >
+    delete from wx_reading
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <select id="queryTheme" parameterType="java.lang.Long" resultType="com.gome.manager.domain.ReadingArticleTheme">
+  	select 
+  	id,rid,digest,purpose,discover,way,conclusion,result,others
+  	from wx_reading_detail 
+ 	where rid = #{rid,jdbcType=BIGINT}
+  </select>
+  <insert id="addTheme" parameterType="com.gome.manager.domain.ReadingArticleTheme" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_reading_detail (rid,digest,purpose,discover,way,conclusion,result,others)
+    values (#{rid,jdbcType=BIGINT}, #{digest,jdbcType=VARCHAR}, #{purpose,jdbcType=VARCHAR}, 
+      #{discover,jdbcType=VARCHAR}, #{way,jdbcType=VARCHAR}, #{conclusion,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{others,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateTheme" parameterType="com.gome.manager.domain.ReadingArticleTheme" >
+    update wx_reading_detail set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="rid != null" >
+      , rid = #{rid,jdbcType=VARCHAR}
+    </if>
+    <if test="digest != null" >
+      , digest = #{digest,jdbcType=VARCHAR}
+    </if>
+	<if test="purpose != null" >
+      , purpose = #{purpose,jdbcType=VARCHAR} 
+    </if>
+    <if test="discover != null" >
+      , discover = #{discover,jdbcType=VARCHAR} 
+    </if>
+    <if test="way != null" >
+      , way = #{way,jdbcType=VARCHAR}
+    </if>
+    <if test="conclusion != null" >
+      , conclusion = #{conclusion,jdbcType=VARCHAR}
+    </if>
+    <if test="result != null" >
+      , result = #{result,jdbcType=VARCHAR}
+    </if>
+    <if test="others != null" >
+      , others = #{others,jdbcType=VARCHAR}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  <!--文章列表  -->
+  <resultMap id="BaseResultMap1" type="com.gome.manager.domain.ReadingArticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryArticleList" resultMap="BaseResultMap1" parameterType="com.gome.manager.domain.Reading">
+	SELECT  id,title FROM wx_reading  WHERE atype =  '1'
+	and yearValue = #{yearValue,jdbcType=VARCHAR} 
+	and catname = #{catname,jdbcType=VARCHAR}
+  </select>
+   <!--文章详情  -->
+   <resultMap id="BaseResultMap3" type="com.gome.manager.domain.ReadingArticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryArticle" resultMap="BaseResultMap3" parameterType="java.lang.String">
+	SELECT  id,title,createTime,fileUrl,author FROM wx_reading WHERE id = #{articleId,jdbcType=BIGINT}
+  </select>
+  
+ <resultMap id="BaseResultMap2" type="com.gome.manager.domain.ReadingArticleProfessor" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="rid" property="rid" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="office" property="office" jdbcType="VARCHAR" />
+    <result column="jobs" property="jobs" jdbcType="VARCHAR" />
+    <result column="picUrl" property="picUrl" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryArticleProfessorList" resultMap="BaseResultMap2" parameterType="java.lang.String">
+	SELECT  id,rid,name,unit, office,jobs,picUrl from wx_reading_professor 
+	WHERE rid = #{articleId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="queryArticleProfessorDetail" resultMap="BaseResultMap2" parameterType="java.lang.String">
+	SELECT  id,rid,(SELECT title FROM wx_reading WHERE id = rid) as title,name,unit, office,jobs,picUrl,content from wx_reading_professor 
+	WHERE id = #{professorId,jdbcType=BIGINT}
+  </select>
+</mapper> 

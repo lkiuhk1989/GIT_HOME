@@ -1,0 +1,48 @@
+<script src="../plugins/jQuery/jquery-1.11.0.min.js"type="text/javascript"></script>
+<script src="../js/meeting/meetingTable.js" type="text/javascript"></script>
+<table class="table_data" cellpadding="0" cellspacing="0">
+	<thead>
+	<tr>
+			<th>序号</th>
+			<th>会议码</th>
+			<th></th>
+			<th>会议名称</th>
+			<th>状态</th>
+			<th>开始时间</th>
+			<th>结束时间</th>
+			<th>创建时间</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+		#if($!page.data.size() > 0)
+	    #set($i=($page.pageNo - 1) * $page.pageSize)
+	    #foreach($meeting in $page.data)
+	    <tr>
+	    	#set($i=$!i + 1)
+	        <td>$!i</td>
+	        <td>$!meeting.code</td>
+	        <td><img class="true_photo" src="$!meeting.picPath"/></td>
+	        <td>$!meeting.name</td>
+	        #if($!meeting.status == 0)
+	        <td>未开始</td>
+	        #elseif($!meeting.status == 1)
+	        <td>已开始</td>
+	        #else
+	        <td>已完成</td>
+	        #end
+	        <td>$!meeting.beginTime</td>
+	        <td>$!meeting.endTime</td>
+	        <td>$!meeting.createTime</td>
+	        <td><a href="../meeting/toEditMeetingView?id=$!meeting.id" id="editGoods"><i class="fa fa-edit"></i></a><a href="javascript:void(0);" name="deleteMeeting" meetingId="$!meeting.id"><i class="fa fa-times"></i></a></td>
+	    </tr>
+	    #end
+	    #else
+		<tr><td colspan='6' align='center'>没有查到任何记录</td></tr>
+		#end
+	</tbody>
+	<tfoot></tfoot>
+</table>
+#if($!page.data.size() > 0)
+#parse("common/pageToolbar.vm")
+#end

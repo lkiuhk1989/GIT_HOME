@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.User" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="hospital" property="hospital" jdbcType="VARCHAR" />
+    <result column="office" property="office" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="beans" property="beans" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectUserListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,userName, nickname,password, hospital, office,phone,email,fileUrl,createTime,updateTime,province,city,(SELECT COALESCE(SUM(amount),0)FROM wx_user_bean WHERE userId = a.id) AS beans
+  	from wx_user a
+ 	where 1=1 
+ 	<if test="conditions.userName != null and conditions.userName != ''" >
+ 	 and (userName like CONCAT('%',#{conditions.userName,jdbcType=VARCHAR},'%'))
+    </if>
+    order by id desc,userName asc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.User">
+  	select count(*) from wx_user 
+  	<if test="userName != null and userName != ''" >
+      where (userName like CONCAT('%',#{userName,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  <select id="queryUserAdvices" resultType="com.gome.manager.domain.UserBean" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,(select userName from wx_user t where t.id = a.userId) as userName,advice,createTime as getTime
+  	from wx_user_advice a
+ 	where 1=1 
+ 	<if test="conditions.userName != null and conditions.userName != ''" >
+ 	 and ((select userName from wx_user t where t.id = a.userId) like CONCAT('%',#{conditions.userName,jdbcType=VARCHAR},'%'))
+    </if>
+    order by id desc,userName asc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  
+  <select id="queryUserAdvicesByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.UserBean">
+  	select count(*) from wx_user_advice  a
+  	<if test="userName != null and userName != ''" >
+      where ((select userName from wx_user t where t.id = a.userId) like CONCAT('%',#{userName,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  
+  
+   <insert id="insertUser" parameterType="com.gome.manager.domain.User" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_user (userName, nickname,password, hospital, phone,email,createTime,province,city)
+    values (#{userName,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{hospital,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateUser" parameterType="com.gome.manager.domain.User" >
+    update wx_user set
+    <if test="id != null and phone == null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+     <if test="phone != null and id == null" >
+      phone = #{phone,jdbcType=BIGINT} 
+    </if>
+     <if test="phone != null and id != null" >
+       id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="userName != null" >
+      , userName = #{userName,jdbcType=VARCHAR}
+    </if>
+    <if test="nickname != null" >
+      , nickname = #{nickname,jdbcType=VARCHAR}
+    </if>
+    <if test="password != null" >
+      , password = #{password,jdbcType=VARCHAR}
+    </if>
+    <if test="hospital != null" >
+      , hospital = #{hospital,jdbcType=VARCHAR}
+    </if>
+    <if test="office != null" >
+      , office = #{office,jdbcType=VARCHAR}
+    </if>
+	<if test="email != null" >
+      , email = #{email,jdbcType=VARCHAR} 
+    </if>
+    <if test="fileUrl != null" >
+      , fileUrl = #{fileUrl,jdbcType=VARCHAR} 
+    </if>
+    <if test="updateTime != null" >
+      , updateTime = #{updateTime,jdbcType=VARCHAR} 
+    </if>
+    <if test="province != null" >
+      , province = #{province,jdbcType=VARCHAR} 
+    </if>
+    <if test="city != null" >
+      , city = #{city,jdbcType=VARCHAR} 
+    </if>
+    where 1=1
+     <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT} 
+    </if>
+     <if test="phone != null" >
+      and phone = #{phone,jdbcType=BIGINT} 
+    </if>
+  </update>
+  
+  <select id="queryPassword" parameterType="com.gome.manager.domain.User" resultType="com.gome.manager.domain.User">
+  	select 
+  	id,userName, nickname,password, hospital, office,phone,email,fileUrl,createTime,updateTime,province,city
+  	from wx_user 
+ 	where phone = #{phone,jdbcType=BIGINT}
+  </select>
+  <select id="queryUserDetail" parameterType="java.lang.Long" resultType="com.gome.manager.domain.User">
+  	select 
+  	id,userName, nickname,password, hospital, office,phone,email,fileUrl,createTime,updateTime,province,city
+  	from wx_user 
+ 	where id = #{userId,jdbcType=BIGINT}
+  </select>
+  <select id="queryUserInfo" parameterType="com.gome.manager.domain.User" resultType="com.gome.manager.domain.User">
+  	select 
+  	id,userName, nickname,password, hospital, office,phone,email,fileUrl,createTime,updateTime,province,city
+  	from wx_user 
+ 	where phone = #{phone,jdbcType=VARCHAR}
+  </select>
+  <select id="checkUser" parameterType="com.gome.manager.domain.User" resultType="com.gome.manager.domain.User">
+  	select 
+  	id,userName, nickname,password, hospital, office,phone,email,fileUrl,createTime,updateTime,province,city
+  	from wx_user 
+ 	where 1=1
+ 	 <if test="id != null" >
+     and id = #{id,jdbcType=BIGINT}
+    </if>
+ 	 <if test="password != null" >
+      and password = #{password,jdbcType=VARCHAR}
+    </if>
+     <if test="phone != null" >
+      and phone = #{phone,jdbcType=BIGINT} 
+    </if>
+  </select>
+  <select id="verifyUserName" parameterType="com.gome.manager.domain.User" resultType="java.lang.Integer">
+  	select count(1)
+  	from wx_user 
+ 	where phone = #{phone,jdbcType=BIGINT}
+  </select>
+  <select id="verifyUserPassword" parameterType="com.gome.manager.domain.User" resultType="java.lang.Integer">
+  	select count(1)
+  	from wx_user 
+ 	where phone = #{phone,jdbcType=VARCHAR}
+ 	and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
+ <insert id="addCodeRecord" parameterType="com.gome.manager.domain.CodeRecord" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_code (phone, code, createTime, flag)
+    values (#{phone,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{flag,jdbcType=VARCHAR})
+  </insert>
+  
+  
+ <insert id="addUserBean" parameterType="com.gome.manager.domain.UserBean" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_user_bean (userId, amount, sourceType, getTime,describes,signTime,sourceId)
+    values (#{userId,jdbcType=BIGINT},#{amount,jdbcType=BIGINT}, #{sourceType,jdbcType=VARCHAR}, #{getTime,jdbcType=VARCHAR}, 
+      #{describes,jdbcType=VARCHAR}, #{signTime,jdbcType=VARCHAR},#{sourceId,jdbcType=BIGINT})
+  </insert>
+  
+ <insert id="addAdvice" parameterType="com.gome.manager.domain.UserBean" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_user_advice (userId, advice, createTime)
+    values (#{userId,jdbcType=BIGINT},#{advice,jdbcType=BIGINT},#{getTime,jdbcType=VARCHAR})
+  </insert>
+  
+  
+  <select id="getTotalBean" parameterType="java.lang.Long" resultType="java.lang.Integer">
+  	select COALESCE(SUM(amount),0)
+  	from wx_user_bean 
+ 	where userId = #{userId,jdbcType=VARCHAR}
+  </select>
+  <select id="queryUserGetBean" parameterType="com.gome.manager.domain.UserBean" resultType="java.lang.Integer">
+  	select COALESCE(SUM(amount),0)
+  	from wx_user_bean 
+ 	where userId = #{userId,jdbcType=VARCHAR}
+ 	and sourceId =  #{sourceId,jdbcType=BIGINT}
+ 	and sourceType =  #{sourceType,jdbcType=VARCHAR}
+  </select>
+  <select id="querySignDate" parameterType="com.gome.manager.domain.UserBean" resultType="com.gome.manager.domain.UserBean">
+  	select id,userId, amount, sourceType, getTime,describes,sourceId
+  	from wx_user_bean 
+ 	where userId = #{userId,jdbcType=VARCHAR} 
+ 	and signTime = #{getTime,jdbcType=VARCHAR}
+  </select>
+  <select id="queryUserIfDownload" parameterType="com.gome.manager.domain.UserBean" resultType="com.gome.manager.domain.UserBean">
+  	select id,userId, amount, sourceType, getTime,describes
+  	from wx_user_bean 
+ 	where userId = #{userId,jdbcType=BIGINT} 
+ 	and sourceId = #{sourceId,jdbcType=BIGINT}
+ 	 <![CDATA[and amount < 0]]>
+  </select>
+  <select id="queryUserSign" parameterType="com.gome.manager.domain.UserBean" resultType="com.gome.manager.domain.UserBean">
+  SELECT signTime,sourceId FROM wx_user_bean
+ 	where userId = #{userId,jdbcType=VARCHAR} 
+ 	and sourceType = '4'
+ 	order by signTime asc
+  </select>
+  <select id="queryUserBeans" parameterType="com.gome.manager.domain.UserBean" resultType="com.gome.manager.domain.UserBean">
+  SELECT id,userId, amount, sourceType, getTime,describes FROM wx_user_bean
+ 	where userId = #{userId,jdbcType=VARCHAR} 
+ 	 <if test="typeB == '0'.toString()" >
+      <![CDATA[and amount > 0]]>     
+    </if>
+ 	 <if test="typeB == '1'.toString()" >
+      <![CDATA[and amount < 0]]>     
+    </if>
+  </select>
+  
+  <update id="updateUserSignCount" parameterType="com.gome.manager.domain.UserBean" >
+    update wx_user_bean set  sourceId = #{sourceId,jdbcType=BIGINT} 
+    where id = #{id,jdbcType=BIGINT} 
+  </update>
+</mapper> 

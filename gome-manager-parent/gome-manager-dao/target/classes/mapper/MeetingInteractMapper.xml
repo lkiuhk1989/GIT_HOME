@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingInteractMapper" >
+  <resultMap id="InteractBaseResultMap" type="com.gome.manager.domain.MeetingInteract" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="per_id" property="perId" jdbcType="BIGINT" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="times" property="times" jdbcType="VARCHAR" />
+    <result column="iswallrun" property="iswallrun" jdbcType="VARCHAR" />
+    <result column="floor" property="floor" jdbcType="VARCHAR" />
+    <result column="perName" property="perName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseInteract_Column_List" >
+    id, meet_code,per_id, content, times,iswallrun,floor
+  </sql>
+  
+  <insert id="addInteract" parameterType="com.gome.manager.domain.MeetingInteract" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_interact (meet_code,per_id, content, times,iswallrun,floor)
+    values (#{code,jdbcType=VARCHAR}, #{perId,jdbcType=VARCHAR},
+      #{content,jdbcType=VARCHAR}, #{times,jdbcType=VARCHAR},#{iswallrun,jdbcType=VARCHAR},#{floor,jdbcType=VARCHAR}
+     )
+  </insert>
+  <delete id="deleteInteractById" parameterType="com.gome.manager.domain.MeetingInteract" >
+    delete from wx_meet_interact
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteWall" parameterType="com.gome.manager.domain.MeetingInteract" >
+    delete from wx_meet_interact
+    where meet_code = #{code,jdbcType=VARCHAR}
+  </delete>
+  <select id="queryInteract" resultMap="InteractBaseResultMap" parameterType="com.gome.manager.domain.MeetingInteract">
+  	select
+  	id, meet_code,per_id, content, times,iswallrun ,(SELECT name FROM wx_join_persons a WHERE a.`id` = b.per_id) as perName,floor
+  	from wx_meet_interact b
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+      <if test="perId != null" >
+      and per_id = #{perId,jdbcType=VARCHAR}
+    </if>
+    order by id desc
+  </select>
+  <select id="queryFloor" resultType="java.lang.String" parameterType="com.gome.manager.domain.MeetingInteract">
+  	SELECT (COUNT(id)+1) AS FLOOR FROM wx_meet_interact 
+  	WHERE 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <update id="updateInteract" parameterType="com.gome.manager.domain.MeetingInteract" >
+    update wx_meet_interact set iswallrun = #{iswallrun,jdbcType=VARCHAR},floor = #{floor,jdbcType=VARCHAR}
+    	where 1=1 
+ 	<if test="id != null" >
+      and id = #{id,jdbcType=BIGINT} 
+    </if>
+  </update>
+  
+   <select id="queryOnWall" resultMap="InteractBaseResultMap" parameterType="com.gome.manager.domain.MeetingInteract">
+  	select
+  	id, meet_code,per_id, content, times,iswallrun ,(SELECT name FROM wx_join_persons a WHERE a.`id` = b.per_id) as perName,floor,(SELECT unit FROM wx_join_persons a WHERE a.`id` = b.per_id) as unitName
+  	from wx_meet_interact b
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="maxInteractId != null" >
+      and id > #{maxInteractId,jdbcType=BIGINT}
+    </if>
+    order by floor*1 asc
+  </select>
+  
+   <select id="queryMaxInteractId" resultType="java.lang.String" parameterType="com.gome.manager.domain.MeetingInteract">
+	  	SELECT
+	  	MAX(id) AS maxInterId
+	  	FROM wx_meet_interact b
+	 	WHERE 1=1
+    <if test="code != null">
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+  </select>
+</mapper> 

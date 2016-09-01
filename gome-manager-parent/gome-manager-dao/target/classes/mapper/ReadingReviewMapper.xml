@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.ReadingReviewMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.ReadingReview" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="yid" property="yid" jdbcType="BIGINT" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="perId" property="perId" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="numfloor" property="numfloor" jdbcType="VARCHAR" />
+    <result column="perName" property="perName" jdbcType="VARCHAR" />
+    <result column="perPic" property="perPic" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryReviewList" resultMap="BaseResultMap" parameterType="com.gome.manager.domain.ReadingReview">
+	SELECT id,yid, createTime,perId,(SELECT userName FROM wx_user u WHERE u.id = a.`perId`) AS perName,(SELECT fileUrl FROM wx_user u WHERE u.id = a.`perId`) AS perPic, content, numfloor
+  	FROM wx_reading_review a
+ 	<if test="yid != null" >
+      where yid = #{yid,jdbcType=BIGINT} 
+    </if>
+ 	<if test="typeV != null" >
+      and typeV = #{typeV,jdbcType=BIGINT} 
+    </if>
+    order by numfloor*1 desc
+  </select>
+ 
+   <insert id="addReview" parameterType="com.gome.manager.domain.ReadingReview" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_reading_review (yid, createTime,perId, content, numfloor,typeV)
+    values (#{yid,jdbcType=BIGINT}, #{createTime,jdbcType=VARCHAR}, #{perId,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{numfloor,jdbcType=VARCHAR},#{typeV,jdbcType=VARCHAR})
+  </insert>
+  
+   <insert id="addSupport" parameterType="com.gome.manager.domain.ReadingSupport" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_reading_support (yid, createTime,perId,typeV)
+    values (#{yid,jdbcType=BIGINT}, #{createTime,jdbcType=VARCHAR}, #{perId,jdbcType=VARCHAR}, #{typeV,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="queryIfSupport" parameterType="com.gome.manager.domain.ReadingSupport" resultType="java.lang.Integer">
+  	select count(*)
+  	from wx_reading_support 
+ 	where yid = #{yid,jdbcType=BIGINT}
+ 	and perId = #{perId,jdbcType=VARCHAR} 
+ 	and typeV = #{typeV,jdbcType=VARCHAR} 
+  </select>
+  
+  <select id="querySupportTotal" parameterType="com.gome.manager.domain.ReadingSupport" resultType="java.lang.Integer">
+  	select count(*)
+  	from wx_reading_support 
+ 	where yid = #{yid,jdbcType=BIGINT}
+ 	and typeV = #{typeV,jdbcType=VARCHAR} 
+  </select>
+  
+ <select id="queryFloor" resultType="java.lang.String" parameterType="com.gome.manager.domain.ReadingReview">
+  	SELECT (COUNT(id)+1) AS FLOOR FROM wx_reading_review 
+  	WHERE 1=1
+    <if test="yid != null" >
+      and yid = #{yid,jdbcType=BIGINT}
+    </if>
+  </select>
+</mapper> 

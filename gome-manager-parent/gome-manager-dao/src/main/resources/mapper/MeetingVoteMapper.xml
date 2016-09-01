@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingVoteMapper" >
+  <resultMap id="VoteBaseResultMap" type="com.gome.manager.domain.MeetingVote" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="per_id" property="perId" jdbcType="BIGINT" />
+    <result column="question_code" property="questionCode" jdbcType="VARCHAR" />
+    <result column="auswer" property="auswer" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseVote_Column_List" >
+    id, meet_code,per_id, question_code, auswer
+  </sql>
+  
+  <insert id="addVote" parameterType="com.gome.manager.domain.MeetingVote" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_vote (meet_code,per_id, question_code, auswer)
+    values (#{code,jdbcType=VARCHAR}, #{perId,jdbcType=VARCHAR},
+      #{questionCode,jdbcType=VARCHAR}, #{auswer,jdbcType=VARCHAR}
+     )
+  </insert>
+  <delete id="deleteVoteById" parameterType="com.gome.manager.domain.MeetingVote" >
+    delete from wx_meet_vote
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="clearVote" parameterType="com.gome.manager.domain.MeetingVote" >
+    delete from wx_meet_vote
+    where meet_code = #{code,jdbcType=VARCHAR}
+  </delete>
+  <select id="queryVote" resultMap="VoteBaseResultMap" parameterType="com.gome.manager.domain.MeetingVote">
+  	select
+  	id, meet_code,per_id, question_code, auswer
+  	from wx_meet_vote
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <resultMap id="VoteResultMap" type="com.gome.manager.domain.MeetingVoteResult" >
+    <result column="anserSum" property="num" jdbcType="VARCHAR" />
+    <result column="auswer" property="auswer" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryVoteResult" resultMap="VoteResultMap" parameterType="com.gome.manager.domain.MeetingVote">
+  	SELECT auswer,COUNT(auswer) AS anserSum FROM wx_meet_vote 
+  	WHERE 1=1
+    <if test="questionCode != null" >
+      and question_code = #{questionCode,jdbcType=VARCHAR} 
+    </if>
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR} 
+    </if>
+  	GROUP BY auswer ORDER BY anserSum DESC,AUSWER ASC
+  </select>
+  
+  <update id="updateVote" parameterType="com.gome.manager.domain.MeetingVote" >
+    update wx_meet_vote set per_id = #{perId,jdbcType=VARCHAR},question_code = #{questionCode,jdbcType=VARCHAR},auswer = #{auswer,jdbcType=VARCHAR}
+    	where 1=1 
+ 	<if test="id != null" >
+      and id != #{id,jdbcType=BIGINT} 
+    </if>
+ 	<if test="perId != null" >
+      and per_id != #{perId,jdbcType=VARCHAR} 
+    </if>
+  </update>
+  <update id="updateVoteTen" parameterType="com.gome.manager.domain.MeetingVote" >
+    update wx_meet_vote_ten set status = #{status,jdbcType=VARCHAR}
+    	where 1=1 
+ 	<if test="questionCode != null" >
+      and topicNum = #{questionCode,jdbcType=VARCHAR} 
+    </if>
+ 	<if test="code != null" >
+      and code = #{code,jdbcType=VARCHAR} 
+    </if>
+  </update>
+  
+   <select id="queryVoteStatus" resultType="java.lang.String" parameterType="com.gome.manager.domain.MeetingVote">
+  	SELECT status FROM wx_meet_vote_ten 
+  	WHERE 1=1
+    <if test="questionCode != null" >
+      and topicNum = #{questionCode,jdbcType=VARCHAR} 
+    </if>
+    <if test="code != null" >
+      and code = #{code,jdbcType=VARCHAR} 
+    </if>
+  </select>
+  <insert id="addDataTen" parameterType="com.gome.manager.domain.MeetingVote" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_vote_ten (topicNum,status, code)
+    values (#{questionCode,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}
+     )
+  </insert>
+  
+   <select id="queryPerVoteStatus"  resultType="java.lang.String" parameterType="com.gome.manager.domain.MeetingVote">
+  	select
+  	COUNT(id) as starusV
+  	from wx_meet_vote
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+     <if test="questionCode != null" >
+      and question_code = #{questionCode,jdbcType=VARCHAR} 
+    </if>
+     <if test="perId != null" >
+      and per_id = #{perId,jdbcType=VARCHAR}
+    </if>
+  </select>
+</mapper> 

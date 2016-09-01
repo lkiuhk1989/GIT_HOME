@@ -1,0 +1,107 @@
+
+    <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+        
+        <!--
+            <div class="user-panel">
+                <div class="pull-left image">
+                    <img #if(!$!muser.headPath || $!muser.headPath=="") src='../libs/img/user2-160x160.jpg' #else src='$!{muser.headPath}' #end class="img-circle" alt="User Image" />
+                </div>
+                <div class="pull-left info">
+                    <p>$!muser.userName</p>
+                    <a href="javascript:void(0);"><i class="fa fa-circle text-success"></i> Online</a>
+                </div>
+            </div>
+          -->  
+            
+            <ul class="sidebar-menu">
+            <!--
+            #foreach($!func in $!listMenu)
+               <li class="treeview">
+                    <a href="$!func.funcUrl">
+                        <i class="fa fa-group"></i>
+                        <span>$!func.funcName</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="userList.html"><i class="fa fa-circle-o more_fa"></i>用户列表</a>
+                        </li>
+                    </ul>
+                </li>
+            #end
+            -->
+            
+               <li class="treeview">
+                    <a href="javascript:void(0);">
+                        <i class="fa fa-user-plus"></i>
+                        <span>我的帐号</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li id="childMenu34"><a href="../user/upMyAccount"><i class="fa fa-circle-o more_fa"></i>修改个人信息</a></li>
+                        <li id="childMenu35"><a href="../user/upPasswd"><i class="fa fa-circle-o more_fa"></i>修改密码</a></li>
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="javascript:void(0);">
+                        <i class="fa fa-group"></i>
+                        <span>会议信息管理</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li id="childSonMenu1">
+                            <a href="../meetManager/toBackView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>背景图</a>
+                         </li>
+                        <li id="childSonMenu2">
+                            <a href="../meetManager/toWelcomeView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>欢迎信</a>
+                         </li>
+                         <li id="childSonMenu3">
+                            <a href="../meetManager/toJoinPerView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>参会人员</a>
+                         </li>
+                         <li id="childSonMenu4">
+                            <a href="../meetManager/toJoinPerImportView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>导入参会人员</a>
+                         </li>
+                         <li id="childSonMenu50">
+                            <a href="../meetingSchedule/toScheduleStageView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>会议日程阶段维护</a>
+                         </li>
+                         <li id="childSonMenu5">
+                            <a href="../meetingSchedule/toScheduleView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>会议日程</a>
+                         </li>
+                         <li id="childSonMenu6">  
+                            <a href="../professor/queryMeetProfessorListView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>专家管理</a>
+                         </li>
+                         <li id="childSonMenu7">   
+                            <a href="../meetingData/toDataView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>会议资料</a>
+                         </li>
+                         <li id="childSonMenu8">   
+                            <a href="../meetingVote/toVoteView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>投票管理</a>
+                         </li>
+                         <li id="childSonMenu9">
+                            <a href="../meetingInteract/toInteractView?id=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>微信互动</a>
+                         </li>
+                         <li id="childSonMenu10">
+                            <a href="" onclick="openWin();"><i class="fa fa-circle-o more_fa"></i>会后调查</a>
+                        </li>
+                         <li id="childSonMenu11">
+                            <a href="../meetingSelect/exportExcel?meetId=$!meeting.id"><i class="fa fa-circle-o more_fa"></i>导出会后调查</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+<script src="../plugins/jQuery/jquery-1.11.0.min.js"type="text/javascript"></script>
+<script type="text/javascript">
+  function openWin(){
+		var tmp=window.open("about:blank","toolbar=no,scrollbars=no,resizable=no,statusbars=no,location=no")
+		tmp.moveTo(0,0);
+		tmp.resizeTo(screen.width+20,screen.height);
+		tmp.focus();
+		tmp.location="/meetVote/view/index.jsp?id="+'$!meeting.id';
+  	
+  }
+ </script>

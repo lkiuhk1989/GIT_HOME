@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.VedioMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.Vedio" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="vedioSize" property="vedioSize" jdbcType="VARCHAR" />
+    <result column="totalSee" property="totalSee" jdbcType="VARCHAR" />
+    <result column="picPath" property="picPath" jdbcType="VARCHAR" />
+    <result column="vType" property="vType" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectVedioListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,title, belong,createTime, fileUrl,vedioSize,picPath,vType
+  	from wx_vedio
+ 	where 1=1
+ 	<if test="conditions.title != null and conditions.title != ''" >
+ 	 and (title like CONCAT('%',#{conditions.title,jdbcType=VARCHAR},'%'))
+    </if>
+    order by id,vType asc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.Vedio">
+  	select count(*) from wx_vedio
+  	<if test="title != null and title != ''" >
+      and (title like CONCAT('%',#{title,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+   <!--年份列表  -->
+   <select id="selectVedioById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	SELECT  id,title, belong,createTime, fileUrl,vedioSize,picPath,vType  FROM wx_vedio  where id = #{id,jdbcType=BIGINT} 
+  </select>
+   <!--视频详情  -->
+   <select id="queryVedioDetail" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	SELECT  id,title, belong,createTime, fileUrl,vedioSize,(SELECT COUNT(1) FROM wx_user_bean WHERE sourceId = a.id AND sourceType = '10') as totalSee,picPath,vType  FROM wx_vedio a  where id = #{id,jdbcType=BIGINT} 
+  </select>
+  
+   <insert id="insertVedio" parameterType="com.gome.manager.domain.Vedio" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_vedio (title, belong, createTime, fileUrl,vedioSize,picPath,vType)
+    values (#{title,jdbcType=VARCHAR}, #{belong,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR}, #{vedioSize,jdbcType=VARCHAR}, #{picPath,jdbcType=VARCHAR}, #{vType,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateVedio" parameterType="com.gome.manager.domain.Vedio" >
+    update wx_vedio set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="title != null" >
+      , title = #{title,jdbcType=VARCHAR}
+    </if>
+	<if test="createTime != null" >
+      , createTime = #{createTime,jdbcType=VARCHAR} 
+    </if>
+	<if test="belong != null" >
+      , belong = #{belong,jdbcType=VARCHAR} 
+    </if>
+    <if test="picPath != null" >
+      , picPath = #{picPath,jdbcType=VARCHAR} 
+    </if>
+    <if test="fileUrl != null" >
+      , fileUrl = #{fileUrl,jdbcType=VARCHAR} 
+    </if>
+    <if test="vType != null" >
+      , vType = #{vType,jdbcType=VARCHAR} 
+    </if>
+    <if test="vedioSize != null" >
+      , vedioSize = #{vedioSize,jdbcType=VARCHAR} 
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <delete id="deleteVedioById" parameterType="java.lang.Long" >
+    delete from wx_vedio
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <!--文章列表  -->
+  <resultMap id="BaseResultMap1" type="com.gome.manager.domain.ReadingArticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryArticleList" resultMap="BaseResultMap1" parameterType="com.gome.manager.domain.Reading">
+	SELECT  id,title,typeName,fileUrl FROM wx_reading  WHERE atype =  '2'
+	<if test="title != null and title != ''" >
+ 	 and (title like CONCAT('%',#{title,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+   <!--文章详情  -->
+   <resultMap id="BaseResultMap3" type="com.gome.manager.domain.ReadingArticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryArticle" resultMap="BaseResultMap3" parameterType="java.lang.String">
+	SELECT  id,title,createTime,fileUrl,author,typeName FROM wx_reading WHERE id = #{articleId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="queryTheme" parameterType="java.lang.Long" resultType="com.gome.manager.domain.ReadingArticleTheme">
+  	select 
+  	id,rid,digest,purpose,discover,way,conclusion,result,others
+  	from wx_reading_detail 
+ 	where rid = #{rid,jdbcType=BIGINT}
+  </select>
+  
+   <select id="queryVedioList" resultType="com.gome.manager.domain.Vedio" parameterType="com.gome.manager.domain.Vedio">
+  	select
+  	id,title, belong,createTime, fileUrl,vedioSize,picPath,(SELECT COUNT(1) FROM wx_user_bean WHERE sourceId = a.id AND sourceType = '10') as totalSee,vType
+  	from wx_vedio a
+  	<if test="vType != null" >
+      where vType = #{vType,jdbcType=VARCHAR} 
+    </if>
+  	ORDER BY createTime desc
+  	</select>
+</mapper> 

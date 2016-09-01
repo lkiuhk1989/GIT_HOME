@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingDataMapper" >
+  <resultMap id="DataBaseResultMap" type="com.gome.manager.domain.MeetingData" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="data_name" property="name" jdbcType="VARCHAR" />
+    <result column="data_picture_url" property="pictureUrl" jdbcType="VARCHAR" />
+    <result column="data_file_url" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="detail" property="detail" jdbcType="VARCHAR" />
+    <result column="speaker" property="speaker" jdbcType="VARCHAR" />
+    <result column="hospitol" property="hospitol" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseData_Column_List" >
+    id, meet_code,data_name, data_picture_url, data_file_url,detail
+  </sql>
+  
+  <insert id="addData" parameterType="com.gome.manager.domain.MeetingData" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_data (meet_code,data_name, data_picture_url, data_file_url,detail,speaker,hospitol)
+    values (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{pictureUrl,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, #{speaker,jdbcType=VARCHAR}, #{hospitol,jdbcType=VARCHAR}
+     )
+  </insert>
+  <delete id="deleteDataById" parameterType="com.gome.manager.domain.MeetingData" >
+    delete from wx_meet_data
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <select id="queryData" resultMap="DataBaseResultMap" parameterType="com.gome.manager.domain.MeetingData">
+  	select
+  	id, meet_code,data_name, data_picture_url, data_file_url,detail,speaker,hospitol
+  	from wx_meet_data
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="queryDataById" resultMap="DataBaseResultMap" parameterType="com.gome.manager.domain.MeetingData">
+  	select
+  	id, meet_code,data_name, data_picture_url, data_file_url,detail,speaker,hospitol
+  	from wx_meet_data
+ 	where 1=1
+    <if test="id != null" >
+      and id = #{id,jdbcType=BIGINT}
+    </if>
+  </select>
+  
+  <update id="updateData" parameterType="com.gome.manager.domain.MeetingData" >
+    update wx_meet_data set data_name = #{name,jdbcType=VARCHAR},data_picture_url = #{pictureUrl,jdbcType=VARCHAR},data_file_url = #{fileUrl,jdbcType=VARCHAR}
+    	where  id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper> 

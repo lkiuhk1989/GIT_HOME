@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingSelectMapper" >
+
+  <resultMap id="SelectObjectBaseResultMap" type="com.gome.manager.domain.ObjectBean" >
+    <id column="oid" property="oid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="discribe" property="discribe" jdbcType="INTEGER" />
+    <result column="meetingId" property="meetingId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseSelect_Column_List" >
+    oid, title,discribe, meetingId
+  </sql>
+  <select id="queryObjectBean" resultMap="SelectObjectBaseResultMap" parameterType="com.gome.manager.domain.ObjectBean">
+  	select
+  	oid, title,discribe, meetingId
+  	from wx_wj_object
+ 	where 1=1
+    <if test="meetingId != null" >
+      and meetingId = #{meetingId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  
+  <resultMap id="SelectQuestionBaseResultMap" type="com.gome.manager.domain.Question" >
+    <id column="oid" property="oid" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="qtype" property="qtype" jdbcType="INTEGER" />
+    <result column="seq" property="seq" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryQuestion" resultMap="SelectQuestionBaseResultMap" parameterType="com.gome.manager.domain.Question">
+  	select
+  	oid, content,qtype, seq,remark
+  	from wx_wj_question
+ 	where 1=1
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    order by seq asc
+  </select>
+  
+  <resultMap id="SelectSelecterBaseResultMap" type="com.gome.manager.domain.Selecter" >
+    <id column="qseq" property="qseq" jdbcType="INTEGER" />
+    <id column="oid" property="oid" jdbcType="INTEGER" />
+    <id column="selseq" property="selseq" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="querySelecter" resultMap="SelectSelecterBaseResultMap" parameterType="com.gome.manager.domain.Selecter">
+  	select
+  	qseq,oid, content,selseq,remark
+  	from wx_wj_selecter
+ 	where 1=1
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    <if test="qseq != null" >
+      and qseq = #{qseq,jdbcType=INTEGER}
+    </if>
+    order by selseq asc
+  </select>
+  
+  
+   <insert id="addAnswer" parameterType="com.gome.manager.domain.Answer" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_wj_answer (replayId,oid, qSeq, seSeq,seValue,remark)
+    values (#{replayId,jdbcType=INTEGER},#{oid,jdbcType=INTEGER},#{qSeq,jdbcType=INTEGER},#{seSeq,jdbcType=INTEGER},
+      #{seValue,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+     )
+  </insert>
+   <insert id="addReplay" parameterType="com.gome.manager.domain.Replay" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_wj_replay (replayId,oid, replayCode, replayIp,replayTime,remark)
+    values (#{replayId,jdbcType=INTEGER},#{oId,jdbcType=INTEGER},#{replayCode,jdbcType=VARCHAR},#{replayIp,jdbcType=VARCHAR},
+      #{replayTime,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+     )
+  </insert>
+  
+  <select id="queryPerSelectResult" resultType="java.lang.String" parameterType="com.gome.manager.domain.Answer">
+  	SELECT COUNT(answerId) FROM wx_wj_answer 
+ 	where 1=1
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    <if test="replayId != null" >
+      and replayId = #{replayId,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <select id="queryAllAnswer" resultType="java.lang.String" parameterType="com.gome.manager.domain.Answer">
+  	SELECT COUNT(*) FROM wx_wj_answer 
+ 	where 1=1
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    <if test="qSeq != null" >
+      and qSeq = #{qSeq,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <select id="querySelecterAnswer" resultType="java.lang.String" parameterType="com.gome.manager.domain.Answer">
+  	SELECT COUNT(*) FROM wx_wj_answer 
+ 	where 1=1
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    <if test="qSeq != null" >
+      and qSeq = #{qSeq,jdbcType=INTEGER}
+    </if>
+    <if test="seSeq != null" >
+      and seSeq = #{seSeq,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <select id="queryAnswerContent" resultType="com.gome.manager.domain.Answer" parameterType="com.gome.manager.domain.Answer">
+  	select *,(SELECT NAME FROM wx_join_persons WHERE id = replayId) AS answerName from wx_wj_answer  
+  	where seValue !=''
+    <if test="oid != null" >
+      and oid = #{oid,jdbcType=INTEGER}
+    </if>
+    <if test="qSeq != null" >
+      and qSeq = #{qSeq,jdbcType=INTEGER}
+    </if>
+    order by answerId asc
+  </select>
+</mapper> 

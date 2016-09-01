@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingJoinPerMapper" >
+  <resultMap id="JoinPerBaseResultMap" type="com.gome.manager.domain.MeetingJoinPer" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="sign_time" property="signTime" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="office" property="office" jdbcType="VARCHAR" />
+    <result column="jobs" property="jobs" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseJoinPer_Column_List" >
+    id, meet_code,name, status, sign_time,unit,office,jobs,position,phone
+  </sql>
+  
+  <insert id="addJoinPer" parameterType="com.gome.manager.domain.MeetingJoinPer" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_join_persons (meet_code,name, status, sign_time,unit,office,jobs,position,phone)
+    values (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{status,jdbcType=VARCHAR}, #{signTime,jdbcType=VARCHAR}
+      , #{unit,jdbcType=VARCHAR}, #{office,jdbcType=VARCHAR}
+      , #{jobs,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}
+      , #{phone,jdbcType=VARCHAR}
+     )
+  </insert>
+  <delete id="deleteJoinPerById" parameterType="com.gome.manager.domain.MeetingJoinPer" >
+    delete from wx_join_persons
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <select id="queryJoinPer" resultMap="JoinPerBaseResultMap" parameterType="com.gome.manager.domain.MeetingJoinPer">
+  	select
+  	id, meet_code,name, status, sign_time,unit,office,jobs,position,phone
+  	from wx_join_persons
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="signTime != null" >
+      and sign_time > DATE(#{signTime,jdbcType=VARCHAR})
+    </if>
+    order by sign_time asc
+  </select>
+  
+  <select id="signMeetJionPerson" resultMap="JoinPerBaseResultMap" parameterType="com.gome.manager.domain.MeetingJoinPer">
+  	select
+  	id, meet_code,name, status, sign_time,openId,openFlag
+  	from wx_join_persons
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null" >
+      and name = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="openId != null" >
+      and openId = #{openId,jdbcType=VARCHAR}
+    </if>
+    <if test="openFlag != null" >
+      and openFlag = #{openFlag,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <update id="updateSignMeetJionPerson" parameterType="com.gome.manager.domain.MeetingJoinPer" >
+    update wx_join_persons set 
+    <if test="id != null" >
+      id = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="status != null" >
+      ,status = #{status,jdbcType=VARCHAR}
+    </if>
+    <if test="signTime != null" >
+     ,sign_time = #{signTime,jdbcType=VARCHAR}
+    </if>
+    <if test="openId != null" >
+     , openId = #{openId,jdbcType=VARCHAR}
+    </if>
+    <if test="openFlag != null" >
+      , openFlag = #{openFlag,jdbcType=VARCHAR}
+    </if>
+    <if test="unit != null" >
+      , unit = #{unit,jdbcType=VARCHAR}
+    </if>
+    <if test="office != null" >
+      , office = #{office,jdbcType=VARCHAR}
+    </if>
+    <if test="jobs != null" >
+      , jobs = #{jobs,jdbcType=VARCHAR}
+    </if>
+    <if test="position != null" >
+      , position = #{position,jdbcType=VARCHAR}
+    </if>
+    <if test="phone != null" >
+      , phone = #{phone,jdbcType=VARCHAR}
+    </if>
+    	where 1=1 
+     <if test="id != null" >
+      and id = #{id,jdbcType=VARCHAR}
+    </if>
+  </update>
+  <update id="updateMeetUnOpenFlag" parameterType="com.gome.manager.domain.MeetingJoinPer" >
+    update wx_join_persons set 
+      openFlag = #{openFlag,jdbcType=VARCHAR}
+    	where 1=1 
+     <if test="openId != null" >
+      and openId = #{openId,jdbcType=VARCHAR}
+    </if>
+  </update>
+</mapper> 

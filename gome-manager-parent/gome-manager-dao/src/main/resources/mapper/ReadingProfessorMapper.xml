@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.ReadingProfessorMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.ReadingArticleProfessor" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="rid" property="rid" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="office" property="office" jdbcType="VARCHAR" />
+    <result column="jobs" property="jobs" jdbcType="VARCHAR" />
+    <result column="picUrl" property="picUrl" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="sortNum" property="sortNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, rid,name, unit, office, jobs,picUrl,content,sortNum
+  </sql>
+  
+  <insert id="insertReadingProfessor" parameterType="com.gome.manager.domain.ReadingArticleProfessor" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_reading_professor (rid,name, unit, office, jobs,picUrl,content,sortNum)
+    values (#{rid,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, 
+      #{office,jdbcType=VARCHAR}, #{jobs,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{sortNum,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="selectReadingProfessorListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select id, rid,name, unit, office, jobs,picUrl,content,sortNum
+  	from wx_reading_professor
+ 	where 1=1
+    <if test="conditions.name != null" >
+      and (name like CONCAT('%',#{conditions.name,jdbcType=VARCHAR},'%'))
+    </if>
+    <if test="conditions.rid != null" >
+      and (rid = #{conditions.rid,jdbcType=VARCHAR})
+    </if>
+     order by sortNum*1 asc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.ReadingArticleProfessor">
+  	select count(*) from wx_reading_professor 
+ 	where 1=1 
+    <if test="name != null" >
+      and (name like CONCAT('%',#{name,jdbcType=VARCHAR},'%'))
+    </if>
+     <if test="rid != null" >
+      and (rid = #{rid,jdbcType=VARCHAR})
+    </if>
+  </select>
+  
+  <select id="selectReadingProfessorById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from wx_reading_professor 
+ 	where id = #{id}
+  </select>
+
+  <update id="updateReadingProfessor" parameterType="com.gome.manager.domain.ReadingArticleProfessor" >
+    update wx_reading_professor set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="rid != null" >
+      , rid = #{rid,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null" >
+      , name = #{name,jdbcType=VARCHAR}
+    </if>
+	<if test="unit != null" >
+      , unit = #{unit,jdbcType=VARCHAR} 
+    </if>
+    <if test="office != null" >
+      , office = #{office,jdbcType=VARCHAR} 
+    </if>
+    <if test="jobs != null" >
+      , jobs = #{jobs,jdbcType=VARCHAR}
+    </if>
+    <if test="content != null" >
+      , content = #{content,jdbcType=VARCHAR}
+    </if>
+    <if test="picUrl != null" >
+      , picUrl = #{picUrl,jdbcType=VARCHAR}
+    </if>
+    <if test="sortNum != null" >
+      , sortNum = #{sortNum,jdbcType=VARCHAR}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <delete id="deleteReadingProfessorById" parameterType="java.lang.Long" >
+    delete from wx_reading_professor
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+</mapper> 

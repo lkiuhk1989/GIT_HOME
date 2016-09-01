@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingProfessorMapper" >
+  <resultMap id="BaseResultMap" type="com.gome.manager.domain.Professor" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="profe_name" property="name" jdbcType="VARCHAR" />
+    <result column="profe_unit" property="unit" jdbcType="INTEGER" />
+    <result column="profe_office" property="office" jdbcType="VARCHAR" />
+    <result column="profe_jobs" property="jobs" jdbcType="VARCHAR" />
+    <result column="recode" property="recode" jdbcType="VARCHAR" />
+    <result column="picUrl" property="picUrl" jdbcType="VARCHAR" />
+    <result column="sortNum" property="sortNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, meet_code,profe_name, profe_unit, profe_office, profe_jobs,picUrl,sortNum
+  </sql>
+  
+  <insert id="insertMeetingProfessor" parameterType="com.gome.manager.domain.Professor" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_professor (meet_code, profe_name,profe_unit, profe_office, profe_jobs,picUrl,sortNum)
+    values (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, 
+      #{office,jdbcType=VARCHAR}, #{jobs,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR},#{sortNum,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="selectMeetingProfessorListByPage" resultMap="BaseResultMap" parameterType="com.gome.manager.common.Page">
+  	select
+  	id,meet_code, profe_name,profe_unit, profe_office, profe_jobs,picUrl,sortNum
+  	from wx_meet_professor
+ 	where 1=1
+    <if test="conditions.code != null" >
+      and meet_code = #{conditions.code,jdbcType=VARCHAR} 
+    </if>
+    <if test="conditions.name != null" >
+      and (profe_name like CONCAT('%',#{conditions.name,jdbcType=VARCHAR},'%'))
+    </if>
+     order by sortNum*1 asc
+    <if test="start != null and pageSize != null">
+    	LIMIT #{start},#{pageSize}
+    </if>
+  </select>
+  <select id="selectTotalResultByConditions" resultType="java.lang.Integer" parameterType="com.gome.manager.domain.Professor">
+  	select count(*) from wx_meet_professor 
+ 	where 1=1 
+ 	<if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR} 
+    </if>
+    <if test="name != null" >
+      and (profe_name like CONCAT('%',#{name,jdbcType=VARCHAR},'%'))
+    </if>
+  </select>
+  <select id="selectMeetingProfessorById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from wx_meet_professor 
+ 	where id = #{id}
+ 	order by id asc
+  </select>
+  <select id="findMeetingProfessorByMeetId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from wx_meet_professor 
+ 	where meet_code = #{id}
+ 	order by sortNum*1 asc
+  </select>
+  <select id="selectMeetingProfessorListByMeeting" resultMap="BaseResultMap" parameterType="com.gome.manager.domain.Professor">
+  	select 
+  	<include refid="Base_Column_List"></include>  
+    from wx_meet_professor
+  	where 1=1 
+ 	<if test="id != null" >
+      and id != #{id,jdbcType=BIGINT} 
+    </if>
+   <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR} 
+    </if>
+    <if test="name != null" >
+      and (profe_name like CONCAT('%',#{name,jdbcType=VARCHAR},'%'))
+    </if>
+    order by sortNum*1 asc
+  </select>
+  <update id="updateMeetingProfessor" parameterType="com.gome.manager.domain.Professor" >
+    update wx_meet_professor set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="code != null" >
+      , meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null" >
+      , profe_name = #{name,jdbcType=VARCHAR}
+    </if>
+	<if test="unit != null" >
+      , profe_unit = #{unit,jdbcType=VARCHAR} 
+    </if>
+    <if test="office != null" >
+      , profe_office = #{office,jdbcType=VARCHAR} 
+    </if>
+    <if test="jobs != null" >
+      , profe_jobs = #{jobs,jdbcType=VARCHAR}
+    </if>
+    <if test="sortNum != null" >
+      , sortNum = #{sortNum,jdbcType=VARCHAR}
+    </if>
+    <if test="picUrl != null" >
+      , picUrl = #{picUrl,jdbcType=VARCHAR}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <delete id="deleteMeetingProfessorById" parameterType="java.lang.Long" >
+    delete from wx_meet_professor
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+   <select id="findMeetingProfessorResume" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	select id, professor_id as professorId ,recode
+    from wx_professor_resume
+  	where  professor_id = #{professorId,jdbcType=BIGINT} 
+  </select>
+  
+  <delete id="delResume" parameterType="java.lang.Long" >
+    delete from wx_professor_resume
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <update id="updateRecode" parameterType="com.gome.manager.domain.Professor" >
+   update wx_professor_resume set
+    <if test="id != null" >
+      id = #{id,jdbcType=BIGINT} 
+    </if>
+    <if test="recode != null" >
+      , recode = #{recode,jdbcType=VARCHAR}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="addMeetingProfessorRecode" parameterType="com.gome.manager.domain.Professor" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_professor_resume (professor_id, recode)
+    values (#{professorId,jdbcType=BIGINT}, #{recode,jdbcType=VARCHAR})
+  </insert>
+</mapper> 

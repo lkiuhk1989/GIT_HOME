@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>会议管理</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+<!-- Bootstrap 3.3.2 -->
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- FontAwesome 4.3.0 -->
+<link href="../libs/font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Theme style -->
+<link href="../libs/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+<link href="../libs/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<!--[if lt IE 9]>
+  <script src="../libs/js/html5shiv.js" type="text/javascript"></script>
+  <script src="../libs/js/respond.js" type="text/javascript"></script>
+  <![endif]-->
+</head>
+<body class="skin-blue">
+	<div class="wrapper">
+		#parse("common/header.vm")
+		<!-- Left side column. contains the logo and sidebar -->
+		#parse("common/leftSonMenu.vm")
+		<!-- Content Wrapper. Contains page content  *********************************************************************************************-->
+		<div class="content-wrapper" >
+			<!-- 用于控制左侧菜单默认选中 -->
+    		<label id="moduleName" style="display:none">会议列表</label>
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<h2>会议管理</h2>
+				<div class="BreadcrumbTrail">
+					<a class="cc link" href="../meeting/queryMeetListView">会议列表</a> <i>&gt;</i>
+					<a class="cc link" href="../meeting/toEditMeetingView?id=$!meeting.id"">会议信息</a> <i>&gt;</i>
+					<a class="cc link" href="javascript:void(0);">会议资料</a> 
+				</div>
+			</section>
+			<!-- Main content -->
+			<section class="content" id="addCommodityShow">
+				<div class="row">
+					<form action="../meetingData/addData" class="form form-horizontal addProduct_form" id="commodity_addForm" enctype="multipart/form-data" method="post" target="target">
+						<input type="hidden" id="meetId" name="meetId" value="$!meeting.id" />
+						<input type="hidden" id="id" name="id"/>
+						<div class="form-group">
+							<label for="commodityName" class="control-label">资料描述</label>
+							<strong>*</strong>
+							<input id="detail" name="detail" class="form-control" type="text"  placeholder="请输入4-100位字符的资料描述" maxlength="100">
+							<span id="goodsNameErrorSpan" class=""></span>
+						</div>
+						<div class="form-group">
+							<label for="commodityName" class="control-label">讲者</label>
+							<strong>*</strong>
+							<input id="speaker" name="speaker" class="form-control" type="text"  placeholder="请输入4-100位字符的资料讲者" maxlength="100">
+							<span id="goodsNameErrorSpan" class=""></span>
+						</div>
+						<div class="form-group">
+							<label for="commodityName" class="control-label">医院</label>
+							<strong>*</strong>
+							<input id="hospitol" name="hospitol" class="form-control" type="text"  placeholder="请输入4-100位字符的资料医院" maxlength="100">
+							<span id="goodsNameErrorSpan" class=""></span>
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label">上传图片</label><strong>*</strong>
+                    		<div class="up_image">
+                    			<img id="oneImage"  alt="点击上传图片" src='../image/upfire.png' onclick="iframeClick()" style="width:124px;height:160px;"/>
+                    		</div>
+							<input type="hidden" id="picPath" name="picPath" value="" />
+							<iframe name="img" id="img" src="${rc.contextPath}/imageUpload/touploadimg" frameborder="0" height="0px"></iframe>
+							<span id="picPathErrorSpan" class=""></span>
+						</div>
+						
+						<div class="form-group">
+							<label for="" class="control-label">上传文件</label><strong>*</strong>
+							<input type="file" id="fileUrl" value="" name="fileUrl"/>
+							<span id="picPathErrorSpan" class=""></span>
+						</div>
+						
+	                     <div style="width: 90%;margin-left: 100px" >
+							<table  class="table_data" cellpadding="0" cellspacing="0">
+								<thead>
+								<tr>
+										<th>资料名</th>
+										<th>讲者</th>
+										<th>医院</th>
+										<th>概述</th>
+										<th>资料图片</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								#if($!dataList.size() > 0)
+								    #foreach($dataN in $dataList)
+				                    		<tr>
+				                    			<td><a herf="'$!dataN.fileUrl'">$!dataN.name</a></td>
+				                    			<td><a herf="'$!dataN.fileUrl'">$!dataN.speaker</a></td>
+				                    			<td><a herf="'$!dataN.fileUrl'">$!dataN.hospitol</a></td>
+				                    			<td><a herf="'$!dataN.fileUrl'">$!dataN.detail</a></td>
+				                    			<td><img class="true_photo" src="$!dataN.pictureUrl"/></td>
+				                    			<td><a href="javascript:void(0);" name="deleteData" dataId="$!dataN.id"><i class="fa fa-times"></i></a></td>
+				                    		</tr>
+								    #end
+								#end
+				            </table>
+			            </div>
+			            <div class="form-group">
+	                        <label for="" class="control-label">操作帐号</label>
+	                        <span class="from-span">$!operateUser</span>
+							<input type="hidden" id="operateUser" name="operateUser" value="$!operateUser" />
+	                    </div>
+			            
+	                    <div class="button_area">
+                        	<input id="save_btn" type="submit" class="user_submit" value="保存">
+                        	<a href="javascript:reload();" class="return-btn">刷新</a>
+                    	</div>
+                	</form>
+                	<iframe id="target" name="target" style="display: none;"></iframe>
+				</div>
+			</section>
+			<!-- Main content end -->
+		</div>
+		<!-- /.content-wrapper ********************-->
+		#parse("common/footer.vm")
+	</div>
+	<!-- ./wrapper -->
+	#parse("common/mod-dialog.vm")
+	
+	<!-- jQuery 2.1.3 -->
+	<script src="../plugins/jQuery/jquery-1.11.0.min.js" type="text/javascript"></script>
+	<!-- jQuery UI 1.11.2 -->
+	<script src="../plugins/jQueryUI/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="../bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<!-- AdminLTE App -->
+	<script src="../libs/js/app.js" type="text/javascript"></script>
+	<script src="../js/left_menu.js"type="text/javascript"></script>
+	<script src="../js/upload.js" type="text/javascript"></script>
+	<script src="../js/meeting/uploadFile.js" type="text/javascript"></script>
+	<script src="../js/meeting/addData.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	function saveImageAs(imgOrURL) {
+		if (typeof imgOrURL == 'object')
+		imgOrURL = imgOrURL.src;
+		window.win = open (imgOrURL);
+		setTimeout('win.document.execCommand("SaveAs")', 500);
+	}
+	function reload(){
+		location.reload();
+	}
+	</script>
+</body>
+</html>

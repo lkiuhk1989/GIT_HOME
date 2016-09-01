@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gome.manager.dao.MeetingScheduleMapper" >
+  <resultMap id="ScheduleBaseResultMap" type="com.gome.manager.domain.MeetingSchedule" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="stageId" property="stageId" jdbcType="BIGINT" />
+    <result column="stage" property="stage" jdbcType="VARCHAR" />
+    <result column="meet_code" property="code" jdbcType="VARCHAR" />
+    <result column="times" property="times" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="beginTimes" property="beginTimes" jdbcType="VARCHAR" />
+    <result column="endTimes" property="endTimes" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="BaseSchedule_Column_List" >
+    id, meet_code,stageId, stage, times,content,endTimes,beginTimes
+  </sql>
+  
+  <insert id="addSchedule" parameterType="com.gome.manager.domain.MeetingSchedule" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_meet_schedule (meet_code,stageId, stage, times,content,endTimes,beginTimes)
+    values (#{code,jdbcType=VARCHAR}, #{stageId,jdbcType=BIGINT},
+      #{stage,jdbcType=VARCHAR}, #{times,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{endTimes,jdbcType=VARCHAR},#{beginTimes,jdbcType=VARCHAR}
+     )
+  </insert>
+  <delete id="deleteScheduleById" parameterType="com.gome.manager.domain.MeetingSchedule" >
+    delete from wx_meet_schedule
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <select id="querySchedule" resultMap="ScheduleBaseResultMap" parameterType="com.gome.manager.domain.MeetingSchedule">
+  	select
+  	id, meet_code,stageId, stage, times,content,endTimes,beginTimes
+  	from wx_meet_schedule
+ 	where 1=1
+    <if test="code != null" >
+      and meet_code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="stageId != null" >
+      and stageId = #{stageId,jdbcType=VARCHAR}
+    </if>
+    ORDER BY id ASC
+  </select>
+  
+  <select id="queryScheduleStage" resultMap="ScheduleBaseResultMap" parameterType="com.gome.manager.domain.Meeting">
+  	select
+  	id as stageId, stage_name as stage
+  	from wx_schedule_stage
+  	where meetId = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="queryStage" resultMap="ScheduleBaseResultMap" parameterType="com.gome.manager.domain.MeetingSchedule">
+  	select
+  	id as stageId, stage_name as stage
+  	from wx_schedule_stage
+  	where 1=1
+    <if test="stageId != null" >
+      and id = #{stageId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <update id="updateSchedule" parameterType="com.gome.manager.domain.MeetingSchedule" >
+    update wx_meet_schedule set stageId = #{stageId,jdbcType=BIGINT},stage = #{stage,jdbcType=VARCHAR},times = #{times,jdbcType=VARCHAR},content = #{content,jdbcType=VARCHAR},
+    endTimes= #{endTimes,jdbcType=VARCHAR},beginTimes = #{beginTimes,jdbcType=VARCHAR}
+    	where  id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="addScheduleStage" parameterType="com.gome.manager.domain.MeetingSchedule" useGeneratedKeys="true" keyProperty="id">
+    insert into wx_schedule_stage (stage_name,meetId)
+    values (#{stage,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR})
+  </insert>
+  
+   <delete id="delStage" parameterType="com.gome.manager.domain.MeetingSchedule" >
+    delete from wx_schedule_stage
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <update id="updateScheduleStage" parameterType="com.gome.manager.domain.MeetingSchedule" >
+    update wx_schedule_stage set stage_name = #{stage,jdbcType=BIGINT}
+    	where  id = #{stageId,jdbcType=BIGINT}
+  </update>
+  
+  
+  <select id="queryScheduleStageType" resultMap="ScheduleBaseResultMap" parameterType="com.gome.manager.domain.MeetingSchedule">
+  	SELECT * FROM wx_meet_schedule WHERE 1=1
+		<if test="code != null" >
+	      and meet_code = #{code,jdbcType=VARCHAR}
+	    </if>
+ 	GROUP BY  stage ORDER BY id ASC
+  </select>
+</mapper> 

@@ -1,0 +1,66 @@
+/**
+ * Created by caowei on 2015/11/09
+ */
+//保存商品
+$(function(){
+	//保存
+	$("#save_btn").click(function(){
+		var content={};
+		content.id=$("#id").val();
+		content.rid=$("#rid").val();
+    	content.digest=$("#digest").val();
+    	content.purpose=$("#purpose").val();
+    	content.discover=$("#discover").val();
+    	content.way=$("#way").val();
+    	content.conclusion=$("#conclusion").val();
+    	content.result=$("#result").val();
+    	content.others=$("#others").val();
+    	$.ajax({
+    		url:'../reading/addTheme',
+    		type:'POST',
+    		dataType:'json',
+    		async:false,
+    		data:{
+    			content:JSON.stringify(content)
+    		},
+    		success:function(data){
+    			if(data.code==1){
+    				$("#tishi").text("添加成功");
+					$("#mod-dialog").show();
+			  		$("#mod-dialog-bg").show();
+			  		$("#altbtn").unbind("click");
+			  		$("#altbtn").bind("click",function(){
+			  			$("#mod-dialog").hide();
+						 $("#mod-dialog-bg").hide();
+			  		});
+    			}else{
+    				$("#tishi").text("添加失败");
+					$("#mod-dialog").show();
+			  		$("#mod-dialog-bg").show();
+			  		$("#altbtn").unbind("click");
+			  		$("#altbtn").bind("click",function(){
+						 $("#mod-dialog").hide();
+						 $("#mod-dialog-bg").hide();
+					});
+    			}
+    		},
+    		error:function(){
+    			$("#tishi").text("系统异常");
+				$("#mod-dialog").show();
+		  		$("#mod-dialog-bg").show();
+		  		$("#altbtn").unbind("click");
+		  		$("#altbtn").bind("click",function(){
+					 $("#mod-dialog").hide();
+					 $("#mod-dialog-bg").hide();
+				});
+    		}
+    		
+    	});
+	});
+	
+	//返回
+	$(".return-btn").click(function(){
+		history.back();
+	});
+	
+});
